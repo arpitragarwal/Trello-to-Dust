@@ -41,16 +41,12 @@ def _days_ago(ts):
         return None
     return (_now() - _parse_iso(ts)).days
 
-def _card_created_at(card_id):
-    # Trello card IDs are MongoDB ObjectIDs: first 8 hex chars = unix timestamp
-    return datetime.fromtimestamp(int(card_id[:8], 16), tz=timezone.utc)
-
 def get_card_actions(card_id):
     url = f"https://api.trello.com/1/cards/{card_id}/actions"
     params = {
         "key": TRELLO_API_KEY,
         "token": TRELLO_TOKEN,
-        "filter": "updateCard:idList,commentCard,addMemberToCard",
+        "filter": "commentCard,addMemberToCard",
         "limit": 1000,
     }
     response = requests.get(url, params=params)
@@ -59,11 +55,8 @@ def get_card_actions(card_id):
 
 def compute_temporal_fields(card, actions):
     now = _now()
-    moves = [a for a in actions if a["type"] == "updateCard" and "listAfter" in a.get("data", {})]
     comments = [a for a in actions if a["type"] == "commentCard"]
     assignments = [a for a in actions if a["type"] == "addMemberToCard"]
-
-    entered_current_list = _parse_iso(moves[0]["date"]) if moves else _card_created_at(card["id"])
 
     days_until_due = (_parse_iso(card["due"]) - now).days if card.get("due") else None
 
@@ -77,11 +70,9 @@ def compute_temporal_fields(card, actions):
         has_had_no_activity_since_assigned = not non_assign_after
 
     return {
-        "days_in_current_list": (now - entered_current_list).days,
         "days_since_last_activity": _days_ago(card.get("dateLastActivity")),
         "days_since_last_comment": _days_ago(comments[0]["date"]) if comments else None,
         "days_until_due": days_until_due,
-        "times_moved_between_lists": len(moves),
         "has_had_no_activity_since_assigned": has_had_no_activity_since_assigned,
     }
 
@@ -113,11 +104,9 @@ def format_card_text(card, list_name, temporal):
         f"**Last Activity:** {card.get('dateLastActivity', 'N/A')}",
         "",
         "## Temporal signals",
-        f"- days_in_current_list: {temporal['days_in_current_list']}",
         f"- days_since_last_activity: {_fmt(temporal['days_since_last_activity'])}",
         f"- days_since_last_comment: {_fmt(temporal['days_since_last_comment'], 'never')}",
         f"- days_until_due: {_fmt(temporal['days_until_due'], 'no due date')}",
-        f"- times_moved_between_lists: {temporal['times_moved_between_lists']}",
         f"- has_had_no_activity_since_assigned: {temporal['has_had_no_activity_since_assigned']}",
     ]
 

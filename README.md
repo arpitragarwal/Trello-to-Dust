@@ -9,11 +9,9 @@ For each card on the configured Trello board, the script:
 1. Fetches the card's basic fields (name, description, URL, labels, due date, location, checklists, last activity).
 2. Fetches the card's recent action history (list moves, comments, member assignments).
 3. Computes a set of **temporal signals** from that history:
-   - `days_in_current_list` — how long since the card was last moved into this column.
    - `days_since_last_activity` — derived from Trello's `dateLastActivity`.
    - `days_since_last_comment` — date of the most recent comment.
    - `days_until_due` — negative means overdue.
-   - `times_moved_between_lists` — a churn signal.
    - `has_had_no_activity_since_assigned` — flags cards that were assigned and then ignored.
 4. Renders all of the above as Markdown and upserts it to Dust, using the Trello card ID as the Dust document ID (so re-runs update rather than duplicate).
 
