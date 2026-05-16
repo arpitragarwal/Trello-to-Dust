@@ -91,7 +91,7 @@ def get_trello_cards():
     params = {
         "key": TRELLO_API_KEY,
         "token": TRELLO_TOKEN,
-        "fields": "id,name,desc,url,idList,labels,due,dateLastActivity,address,locationName,coordinates",
+        "fields": "id,name,desc,url,idList,labels,due,dueComplete,dateLastActivity,address,locationName,coordinates",
         "checklists": "all",
         "members": "true",
     }
@@ -107,6 +107,7 @@ def format_card_text(card, list_name, temporal):
     lines = [
         f"# {card['name']}",
         f"**List:** {list_name}",
+        f"**Completed:** {bool(card.get('dueComplete'))}",
         f"**URL:** {card.get('url', 'N/A')}",
         f"**Due Date:** {card.get('due') or 'None'}",
         f"**Last Activity:** {card.get('dateLastActivity', 'N/A')}",
