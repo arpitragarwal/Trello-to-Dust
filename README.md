@@ -28,50 +28,8 @@ The workflow lives at `.github/workflows/sync.yml` and does three things:
 
 ### Secrets
 
-The script reads three secrets from environment variables and exits with a clear error if any are missing. Configure them under repo **Settings → Secrets and variables → Actions → Repository secrets**:
+Configure under repo **Settings → Secrets and variables → Actions → Repository secrets**:
 
-| Secret | What it is |
-| --- | --- |
-| `TRELLO_API_KEY` | Trello app key (short hex string). |
-| `TRELLO_TOKEN` | Trello user token (long string starting with `ATTA...`) authorizing the app to read the board. |
-| `DUST_API_KEY` | Dust API key (starts with `sk-`) with write access to the target data source. |
-
-Paste values **without** surrounding quotes.
-
-### Non-secret configuration
-
-The Trello board ID, Dust workspace ID, space ID, and data source ID are hardcoded near the top of `trello_to_dust.py`. They are identifiers, not credentials, so they don't need to be secrets. Edit the file if you want to point at a different board or data source.
-
-## Running locally
-
-```sh
-python3 -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
-
-TRELLO_API_KEY='...' \
-TRELLO_TOKEN='...' \
-DUST_API_KEY='...' \
-python trello_to_dust.py
-```
-
-Output looks like:
-
-```
-Fetching Trello data...
-Found 7 cards across 4 lists.
-[1/7] ✅ Synced: Card title here
-...
-Sync complete!
-```
-
-## Viewing run logs
-
-In the GitHub repo, open the **Actions** tab, click the **Trello to Dust Sync** workflow in the sidebar, then click any run to drill into per-step logs. Logs are retained for 90 days.
-
-## Files
-
-- `trello_to_dust.py` — the sync script.
-- `requirements.txt` — Python dependencies (just `requests`).
-- `.github/workflows/sync.yml` — GitHub Actions workflow.
-- `.gitignore` — keeps `venv/` and logs out of git.
+- `TRELLO_API_KEY`
+- `TRELLO_TOKEN`
+- `DUST_API_KEY`
