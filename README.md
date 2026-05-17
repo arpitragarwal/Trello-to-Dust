@@ -6,8 +6,8 @@ Syncs cards from a Trello board into a [Dust](https://dust.tt) data source so a 
 
 For each card on the configured Trello board, the script:
 
-1. Fetches the card's basic fields (name, description, URL, labels, due date, location, checklists, last activity).
-2. Fetches the card's recent action history (list moves, comments, member assignments).
+1. Fetches the card's basic fields (name, description, URL, labels, due date, completed flag, location, checklists, last activity).
+2. Fetches the card's recent action history (comments, member assignments) and includes each comment's date, author, and text in the document body.
 3. Computes a set of **temporal signals** from that history:
    - `days_since_last_activity` — derived from Trello's `dateLastActivity`.
    - `days_since_last_comment` — date of the most recent comment.
