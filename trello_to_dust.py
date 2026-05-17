@@ -91,7 +91,7 @@ def get_trello_cards():
     return response.json()
 
 # --- Step 3: Format a card as text for Dust ---
-def format_card_text(card, list_name, temporal):
+def format_card_text(card, list_name, temporal, actions):
     def _fmt(v, none_label="n/a"):
         return none_label if v is None else v
 
@@ -130,6 +130,17 @@ def format_card_text(card, list_name, temporal):
 
     if card.get("desc"):
         lines.append(f"\n## Description\n{card['desc']}")
+
+    comments = [a for a in actions if a["type"] == "commentCard"]
+    if comments:
+        lines.append("\n## Comments")
+        for c in reversed(comments):  # oldest first for readability
+            author = (c.get("memberCreator") or {}).get("fullName", "Unknown")
+            date = c.get("date", "")[:10]
+            text = (c.get("data") or {}).get("text", "")
+            lines.append(f"\n**{date} — {author}**")
+            for line in text.splitlines() or [""]:
+                lines.append(f"> {line}")
 
     checklists = card.get("checklists", [])
     for checklist in checklists:
@@ -171,7 +182,7 @@ def sync_trello_to_dust():
         try:
             actions = get_card_actions(card["id"])
             temporal = compute_temporal_fields(card, actions)
-            text = format_card_text(card, list_name, temporal)
+            text = format_card_text(card, list_name, temporal, actions)
             upsert_to_dust(
                 card_id=card["id"],
                 title=card["name"],
