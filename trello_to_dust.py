@@ -95,9 +95,12 @@ def format_card_text(card, list_name, temporal, actions):
     def _fmt(v, none_label="n/a"):
         return none_label if v is None else v
 
+    labels = [lbl["name"] for lbl in card.get("labels", []) if lbl.get("name")]
+
     lines = [
         f"# {card['name']}",
         f"**List:** {list_name}",
+        f"**Labels:** {', '.join(labels) if labels else 'None'}",
         f"**Completed:** {bool(card.get('dueComplete'))}",
         f"**URL:** {card.get('url', 'N/A')}",
         f"**Due Date:** {card.get('due') or 'None'}",
@@ -109,10 +112,6 @@ def format_card_text(card, list_name, temporal, actions):
         f"- days_until_due: {_fmt(temporal['days_until_due'], 'no due date')}",
         f"- has_had_no_activity_since_assigned: {temporal['has_had_no_activity_since_assigned']}",
     ]
-
-    labels = [lbl["name"] for lbl in card.get("labels", []) if lbl.get("name")]
-    if labels:
-        lines.append(f"**Labels:** {', '.join(labels)}")
 
     location_parts = []
     if card.get("locationName"):
