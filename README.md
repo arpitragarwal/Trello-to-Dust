@@ -17,7 +17,7 @@ For each card on the configured Trello board, the script:
 
 ## How the GitHub Action runs
 
-The workflow lives at `.github/workflows/sync.yml` and does three things:
+The workflow lives at `.github/workflows/sync.yml`
 
 - **Triggers:**
   - `schedule: cron: '0 * * * *'` — runs at the top of every hour (with the usual GitHub-Actions scheduling drift; expect a few minutes of delay during busy periods).
